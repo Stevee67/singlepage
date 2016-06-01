@@ -60,7 +60,8 @@ class FeatureRequest(Parent, Base):
     priority = Column(TABLE_TYPES['integer'])
     product_area_id = Column(TABLE_TYPES['id'], ForeignKey('product_areas.id'))
 
-    def __init__(self, title, description, client_id, target_date, ticket_url, status, priority, product_area_id):
+    def __init__(self, title=None, description=None, client_id=None, target_date=None,
+                 ticket_url=None, status=None, priority=None, product_area_id=None):
         self.title = title
         self.description = description
         self.client_id = client_id
@@ -71,36 +72,38 @@ class FeatureRequest(Parent, Base):
         self.product_area_id = product_area_id
 
     @staticmethod
-    def save_request(data):
+    def get_corect_data(data):
         request = FeatureRequest.immut_to_dict(data)
-        productArea = db(ProductAreas).filter(ProductAreas.title==request['productArea']).first()
-        result = FeatureRequest(
-            title=request['title'],
-            description=request['description'],
-            client_id=int(request['client_id']),
-            target_date=request['targetDate'],
-            ticket_url=request['ticketURL'],
-            status='TODO',
-            priority=int(request['priority']),
-            product_area_id=productArea.id
-        ).save()
+        productArea_id = ''
+        if 'productArea' in request:
+            productArea = db(ProductAreas).filter(ProductAreas.title == request['productArea']).first()
+            if productArea:
+                productArea_id = productArea.id
+        new_data = {'title': request['title'] if 'title' in request else '',
+                    'description': request['description'] if 'description' in request else '',
+                    'client_id': int(request['client_id']) if 'client_id' in request else '',
+                    'target_date': request['targetDate'] if 'targetDate' in request else '',
+                    'ticket_url': request['ticketURL'] if 'ticketURL' in request else '',
+                    'status': 'TODO' ,
+                    'priority': int(request['priority']) if 'priority' in request else '',
+                    'product_area_id': productArea_id}
+        return new_data
+
+    @staticmethod
+    def save_request(data):
+        new_data = FeatureRequest.get_corect_data(data)
+        print(new_data)
+        result = FeatureRequest().set_attr(new_data)
         return result
 
     @staticmethod
     def set_request(data):
-        request = FeatureRequest.immut_to_dict(data)
-        productArea = db(ProductAreas).filter(ProductAreas.title == request['productArea']).first()
-        object = FeatureRequest.get(request['id']).first()
-        new_data = {'title': request['title'],
-                    'description' :request['description'],
-                        'client_id' :int(request['client_id']),
-                        'target_date' :request['targetDate'],
-                        'ticket_url' :request['ticketURL'],
-                        'status' :'TODO',
-                        'priority' :int(request['priority']),
-                        'product_area_id' :productArea.id}
+        id = FeatureRequest.immut_to_dict(data)['id']
+        new_data = FeatureRequest.get_corect_data(data)
+        object = FeatureRequest.get(id).first()
         object.set_attr(new_data)
         return object.object_to_dict()
+
 
     @staticmethod
     def get_all(client_id):

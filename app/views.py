@@ -23,12 +23,16 @@ def home_details(client_id):
 
     client = Clients.get(client_id)
     feature_requests = FeatureRequest.get_all(client_id)
+    user = None
+    if current_user.is_authenticated:
+        user = db(Users, id=current_user.id)
     product_areas = [area.object_to_dict() for area in db(ProductAreas).all()]
     prioritets = PRIORITETS
     return render_template('details.html', client=client.object_to_dict(),
                            feature_requests=feature_requests,
                            product_areas=product_areas,
-                           prioritets=prioritets)
+                           prioritets=prioritets,
+                           user=user)
 
 
 @index_bp.route('save_request/', methods=['POST'])
@@ -76,7 +80,7 @@ def login():
         return render_template(url_for('index.index'))
     email = request.form.get('email')
     password = request.form.get('password')
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         print('a')
     if email and password:
         user = db(Users).filter(Users.email == email).first()
@@ -91,7 +95,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect('')
+    return redirect('/')
 
 
 
