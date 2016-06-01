@@ -1,9 +1,10 @@
 from flask import request, g, url_for
 
-def database_uri(host, username, password, db_name):
-    return 'postgresql+psycopg2://{username}:{password}@{host}/{db_name}'. \
+def database_uri(host, username, password, db_name, port):
+    return 'postgresql+psycopg2://{username}:{password}@{host}:{port}/{db_name}'. \
         format(**{'db_name': db_name,
                   'host': host,
+                  'port': port,
                   'username': username,
                   'password': password})
 

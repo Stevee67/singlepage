@@ -3,4 +3,5 @@ Flask-WTF==0.12
 Jinja2==2.7.3
 Flask-SQLAlchemy==2.0
 SQLAlchemy==1.0.6
+Flask-Login
 Flask-Session==0.2.3

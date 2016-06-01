@@ -3,7 +3,7 @@ from config import Config
 from app.blueprints import register_bp
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
-from flask.ext.login import LoginManager
+from flask.ext.login import LoginManager, current_user
 from .models import Users
 
 app = Flask(__name__)
@@ -40,8 +40,10 @@ def close_database(exception):
 
 @login_manager.user_loader
 def load_user(id):
-    print(id)
-    g.user = g.db.query(Users).filter_by(id=int(id)).first()
+    user = g.db.query(Users).filter_by(id=int(id)).first()
+    g.user = user
+    return user
+
 
 
 

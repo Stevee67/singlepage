@@ -26,7 +26,6 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 SET search_path = public, pg_catalog;
 
 --
--- Name: get_cr_tm(); Type: FUNCTION; Schema: public; Owner: webdev
 --
 
 CREATE FUNCTION get_cr_tm() RETURNS trigger
@@ -37,10 +36,8 @@ CREATE FUNCTION get_cr_tm() RETURNS trigger
 END;$$;
 
 
-ALTER FUNCTION public.get_cr_tm() OWNER TO webdev;
 
 --
--- Name: client_autoinc; Type: SEQUENCE; Schema: public; Owner: webdev
 --
 
 CREATE SEQUENCE client_autoinc
@@ -52,14 +49,12 @@ CREATE SEQUENCE client_autoinc
     CYCLE;
 
 
-ALTER TABLE client_autoinc OWNER TO webdev;
 
 SET default_tablespace = '';
 
 SET default_with_oids = false;
 
 --
--- Name: clients; Type: TABLE; Schema: public; Owner: webdev; Tablespace: 
 --
 
 CREATE TABLE clients (
@@ -78,7 +73,6 @@ CREATE TABLE clients (
 );
 
 
-ALTER TABLE clients OWNER TO webdev;
 
 --
 -- Name: feature_autoinc; Type: SEQUENCE; Schema: public; Owner: webdev
@@ -93,7 +87,6 @@ CREATE SEQUENCE feature_autoinc
     CYCLE;
 
 
-ALTER TABLE feature_autoinc OWNER TO webdev;
 
 --
 -- Name: feature_request; Type: TABLE; Schema: public; Owner: webdev; Tablespace: 
@@ -113,7 +106,6 @@ CREATE TABLE feature_request (
 );
 
 
-ALTER TABLE feature_request OWNER TO webdev;
 
 --
 -- Name: product_area_autoinc; Type: SEQUENCE; Schema: public; Owner: webdev
@@ -128,7 +120,6 @@ CREATE SEQUENCE product_area_autoinc
     CYCLE;
 
 
-ALTER TABLE product_area_autoinc OWNER TO webdev;
 
 --
 -- Name: product_areas; Type: TABLE; Schema: public; Owner: webdev; Tablespace: 
@@ -140,7 +131,6 @@ CREATE TABLE product_areas (
 );
 
 
-ALTER TABLE product_areas OWNER TO webdev;
 
 --
 -- Name: user_autoinc; Type: SEQUENCE; Schema: public; Owner: webdev
@@ -155,7 +145,6 @@ CREATE SEQUENCE user_autoinc
     CYCLE;
 
 
-ALTER TABLE user_autoinc OWNER TO webdev;
 
 --
 -- Name: users; Type: TABLE; Schema: public; Owner: webdev; Tablespace: 
@@ -171,7 +160,6 @@ CREATE TABLE users (
 );
 
 
-ALTER TABLE users OWNER TO webdev;
 
 --
 -- Name: client_autoinc; Type: SEQUENCE SET; Schema: public; Owner: webdev
