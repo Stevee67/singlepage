@@ -37,14 +37,14 @@ def home_details(client_id):
 
 @index_bp.route('save_request/', methods=['POST'])
 def save_request():
-    FeatureRequest.save_request(request.form)
-    return ''
+    req = FeatureRequest.save_request(request.form)
+    return req
 
 @index_bp.route('delete_request/', methods=['POST'])
 def delete_request():
     data = request.form
-    feature_request = FeatureRequest.get(FeatureRequest.immut_to_dict(data)['id']).delete()
-    return feature_request.object_to_dict()
+    FeatureRequest.get(FeatureRequest.immut_to_dict(data)['id']).delete()
+    return {}
 
 @index_bp.route('edit_request/', methods=['POST'])
 def edit_request():

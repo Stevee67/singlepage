@@ -93,16 +93,19 @@ class FeatureRequest(Parent, Base):
     def save_request(data):
         new_data = FeatureRequest.get_corect_data(data)
         print(new_data)
-        result = FeatureRequest().set_attr(new_data)
-        return result
+        object = FeatureRequest().set_attr(new_data).save()
+        return object.object_to_dict()
 
     @staticmethod
     def set_request(data):
         id = FeatureRequest.immut_to_dict(data)['id']
         new_data = FeatureRequest.get_corect_data(data)
         object = FeatureRequest.get(id).first()
-        object.set_attr(new_data)
-        return object.object_to_dict()
+        if object:
+            object.set_attr(new_data).save()
+            return object.object_to_dict()
+        else:
+            return 'ERROR'
 
 
     @staticmethod
