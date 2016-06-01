@@ -14,7 +14,7 @@ def create_app():
     app.secret_key = Config.SECRET_KEY
     register_bp(app)
     app.before_request(load_database(app.config['DATABASE_URI']))
-    # app.before_request(lambda: load_user())
+    # app.before_request(load_user())
     app.teardown_request(close_database)
     login_manager.init_app(app)
     return app
@@ -40,7 +40,9 @@ def close_database(exception):
 
 @login_manager.user_loader
 def load_user(id):
-    g.db.query(Users).filter_by(id=int(id)).first()
+    print(id)
+    g.user = g.db.query(Users).filter_by(id=int(id)).first()
+
 
 
 def db_session_func(db_config):

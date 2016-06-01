@@ -91,7 +91,6 @@ class FeatureRequest(Parent, Base):
         request = FeatureRequest.immut_to_dict(data)
         productArea = db(ProductAreas).filter(ProductAreas.title == request['productArea']).first()
         object = FeatureRequest.get(request['id']).first()
-        print(object.id)
         new_data = {'title': request['title'],
                     'description' :request['description'],
                         'client_id' :int(request['client_id']),

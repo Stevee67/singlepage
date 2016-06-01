@@ -5,7 +5,6 @@ from flask import jsonify
 from app.tools import db
 from flask.ext.login import logout_user, current_user, login_required, login_user
 from app.constants import PRIORITETS
-import os
 
 
 
@@ -16,7 +15,6 @@ def index():
 
 @index_bp.route('home/', methods=['GET'])
 def home():
-    print(current_user.is_authenticated())
     clients = [client.object_to_dict() for client in db(Clients).all()]
     return render_template('home.html', clients=clients)
 
@@ -24,8 +22,6 @@ def home():
 def home_details(client_id):
 
     client = Clients.get(client_id)
-    print(current_user.is_authenticated())
-    # user = Users
     feature_requests = FeatureRequest.get_all(client_id)
     product_areas = [area.object_to_dict() for area in db(ProductAreas).all()]
     prioritets = PRIORITETS
