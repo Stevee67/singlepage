@@ -39,7 +39,6 @@ def close_database(exception):
 
 @login_manager.user_loader
 def load_user(id):
-    print(id)
     user = g.db.query(Users).filter_by(id=int(id)).first()
     g.user = user
     return user

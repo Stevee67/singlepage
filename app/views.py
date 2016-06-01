@@ -46,9 +46,11 @@ def save_request():
 @index_bp.route('delete_request/', methods=['POST'])
 def delete_request():
     data = request.form
-    print(FeatureRequest.immut_to_dict(data)['id'])
-    FeatureRequest.get(FeatureRequest.immut_to_dict(data)['id']).delete()
-    return jsonify({})
+    feuture =  FeatureRequest.get(FeatureRequest.immut_to_dict(data)['id'])
+    if feuture:
+        feuture.delete_req()
+        return 'OK'
+    return 'ERROR'
 
 @index_bp.route('edit_request/', methods=['POST'])
 def edit_request():
