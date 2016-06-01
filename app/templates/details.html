@@ -93,10 +93,13 @@
                             <td >{{req['area']}}</td>
                             <td >{{req['priority']}}</td>
                             <td >{{req['status']}}</td>
-                            <td>
-                                <button data-bind="click: $root.edit" type="button" class="btn btn-warning" data-toggle="modal" data-target="#modalRequestForm" onclick="edit_request('{{req.id}}')"><i class="fa fa-edit"></i></button>
-                                <button data-bind="click: $root.remove" type="button" class="btn btn-danger" onclick="remove_request('{{req.id}}')"><i class="fa fa-remove"></i></button>
-                            </td>
+                             {% if user %}
+                                <td>
+                                    <button data-bind="click: $root.edit" type="button" class="btn btn-warning" data-toggle="modal" data-target="#modalRequestForm" onclick="edit_request('{{req.id}}')"><i class="fa fa-edit"></i></button>
+                                    <button data-bind="click: $root.remove" type="button" class="btn btn-danger" onclick="remove_request('{{req.id}}')"><i class="fa fa-remove"></i></button>
+
+                                </td>
+                            {% endif %}
                          {%endfor%}
                         </tr>
                     </tbody>
