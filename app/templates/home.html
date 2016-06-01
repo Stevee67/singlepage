@@ -1,0 +1,120 @@
+﻿<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en">
+<!--<![endif]-->
+<head>
+    <title>Feature Requests App - Login</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/favicon.ico">
+    <!-- Web Fonts -->
+    <link rel='stylesheet' type='text/css' href='//fonts.googleapis.com/css?family=Open+Sans:400,300,600&amp;subset=cyrillic,latin'>
+    <!-- CSS Global Compulsory -->
+    <link rel="stylesheet" href="/static/assets/plugins/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/assets/css/style.css">
+    <!-- CSS Implementing Plugins -->
+    <link rel="stylesheet" href="/static/assets/plugins/animate.css">
+    <link rel="stylesheet" href="/static/assets/plugins/line-icons/line-icons.css">
+    <link rel="stylesheet" href="/static/assets/plugins/font-awesome/css/font-awesome.min.css">
+    <!-- CSS Page Style -->
+    <link href="/static/assets/css/pages/home.css" rel="stylesheet">
+    <!-- CSS Theme -->
+    <link rel="stylesheet" href="/static/assets/css/theme-colors/default.css">
+    <link rel="stylesheet" href="/static/assets/css/theme-skins/dark.css">
+    <!-- CSS Customization -->
+    <link rel="stylesheet" href="/static/assets/css/custom.css">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">FEATURE REQUEST APP</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#">CLIENTS</a></li>
+                </ul>
+            </div><!--/.navbar-collapse -->
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row margin-top-20">
+            {%for client in clients %}
+            <div class="col-lg-8">
+                <div class="panel panel-sea">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><i class="fa fa-building"></i><span >{{client['client_name']}}</span><span class="pull-right">Request:<span>{{client['count_request'] if client['count_request'] else 0}}/{{client['count_active_request'] if client['count_active_request'] else 0}}</span></span></h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <h4>{{client['project_name']}}</h4>
+                                <p>{{client['description']}}</p>
+                            </div>
+                            <div class="col-lg-4 text-center">
+                                <div class="circle" id="circles-3">
+                                    <div class="circles-wrp" style="position: relative; display: inline-block;">
+                                        <svg width="140" height="140"><path fill="transparent" stroke="#BEE3F7" stroke-width="2" d="M 69.98594654894504 1.0000014311557095 A 69 69 0 1 1 69.90416038427306 1.0000665596838587 Z"></path><path fill="transparent" stroke="#3498DB" stroke-width="2" d="M 69.98594654894504 1.0000014311557095 A 69 69 0 1 1 2.2364051601485784 83.0036615758971 "></path></svg>
+                                        <div class="circles-text-wrp" style="position: absolute; top: 0; left: 0; text-align: center; width: 100%; font-size: 35px; height: 140px; line-height: 140px;">
+                                            <span class="circles-number">
+                                                <span class="circles-number" data-bind="text: compleatedPercent"></span>
+                                            </span><span class="circles-text">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="margin-top-20">
+                            <strong>Priority: {{client['priority']}}</strong>
+                            <a href="/home/details/{{client['id']}}" class="btn btn-default pull-right">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="col-lg-4 text-center">
+                <div class="inner-pchart">
+                    <div class="circle" id="circle-1">
+                        <div class="circles-wrp" style="position: relative; display: inline-block;">
+                            <svg width="160" height="160"><path fill="transparent" stroke="#eee" stroke-width="8" d="M 79.98452083651917 4.000001576345426 A 76 76 0 1 1 79.89443752470656 4.0000733121155605 Z"></path><path fill="transparent" stroke="#72c02c" stroke-width="8" d="M 79.98452083651917 4.000001576345426 A 76 76 0 1 1 24.568484463513414 28.00627840471269 "></path></svg>
+                            <div class="circles-text-wrp" style="position: absolute; top: 0; left: 0; text-align: center; width: 100%; font-size: 40px; height: 160px; line-height: 160px;">
+                                <span class="circles-number">
+                                    <span class="circles-number" data-bind="text: compleatedPercent"></span>
+                                </span><span class="circles-text">%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="circle-title">Total completed</h3>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
+            </div>
+        </div>
+        <hr>
+
+        <footer>
+            <p>&copy; 2015 Company, Inc.</p>
+        </footer>
+    </div> <!-- /container -->
+    <!-- JS Global Compulsory -->
+    <script type="text/javascript" src="/static/assets/plugins/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/assets/plugins/jquery/jquery-migrate.min.js"></script>
+    <script type="text/javascript" src="/static/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/assets/plugins/knockoutjs/knockout-3.4.0.js"></script>
+    <script type="text/javascript" src="/static/assets/js/pages/home.js"></script>
+    <script type="text/javascript" src="/static/assets/js/custom.js"></script>
+</body>
+</html>
