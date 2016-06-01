@@ -22,6 +22,9 @@ def home():
 def home_details(client_id):
 
     client = Clients.get(client_id)
+    completed = 0
+    if client:
+        completed = client.get_persent_compl()
     feature_requests = FeatureRequest.get_all(client_id)
     user = None
     if current_user.is_authenticated:
@@ -32,7 +35,8 @@ def home_details(client_id):
                            feature_requests=feature_requests,
                            product_areas=product_areas,
                            prioritets=prioritets,
-                           user=user)
+                           user=user,
+                           completed=completed)
 
 
 @index_bp.route('save_request/', methods=['POST'])

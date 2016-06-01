@@ -93,6 +93,11 @@ class FeatureRequest(Parent, Base):
     def save_request(data):
         new_data = FeatureRequest.get_corect_data(data)
         print(new_data)
+        if 'client_id' in new_data:
+            client = Clients.get(new_data['client_id'])
+            client.count_request = client.count_request + 1
+            client.count_active_request = client.count_active_request + 1
+            client.save()
         object = FeatureRequest().set_attr(new_data).save()
         return object.object_to_dict()
 
@@ -182,9 +187,11 @@ class Clients(Parent, Base):
     email = Column(TABLE_TYPES['email'],nullable=False, unique=True)
     priority = Column(TABLE_TYPES['integer'])
     user_id = Column(TABLE_TYPES['id'], ForeignKey('users.id'))
+    count_request = Column(TABLE_TYPES['integer'])
+    count_active_request = Column(TABLE_TYPES['integer'])
 
     def __init__(self, project_name=None, client_name=None, description=None, website=None,
-                 phone=None, email=None, priority=None, user_id=None):
+                 phone=None, email=None, priority=None, user_id=None, count_request=None, count_active_request=None):
         self.project_name = project_name
         self.client_name = client_name
         self.description = description
@@ -193,7 +200,14 @@ class Clients(Parent, Base):
         self.email = email
         self.priority = priority
         self.user_id = user_id
+        self.count_request = count_request
+        self.count_active_request = count_active_request
 
+    def get_persent_compl(self):
+        if self.count_request and self.count_active_request:
+            return self.count_request/self.count_active_request
+        else:
+            return 0
 
     def add_client(self, data):
         return self.set_attr(ProductAreas.immut_to_dict(data)).save()
