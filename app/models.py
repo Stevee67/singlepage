@@ -120,7 +120,6 @@ class FeatureRequest(Parent, Base):
         for r in objs:
             r.update({'area': ProductAreas.get(r['product_area_id']).title})
             res.append(r)
-        print(res)
         return res
 
 
@@ -211,6 +210,16 @@ class Clients(Parent, Base):
 
     def add_client(self, data):
         return self.set_attr(ProductAreas.immut_to_dict(data)).save()
+
+    @staticmethod
+    def get_all():
+        clients = [client.object_to_dict() for client in db(Clients).all()]
+        # res = []
+        # for r in clients:
+        #     if r['count_request'] and r['count_active_request']:
+        #         r.update({'completed_persent': r['count_request'] /r['count_active_request']})
+        #     res.append(r)
+        return clients
 
 class ProductAreas(Parent, Base):
     __tablename__ = 'product_areas'

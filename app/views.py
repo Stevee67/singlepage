@@ -15,12 +15,11 @@ def index():
 
 @index_bp.route('home/', methods=['GET'])
 def home():
-    clients = [client.object_to_dict() for client in db(Clients).all()]
+    clients = Clients.get_all()
     return render_template('home.html', clients=clients)
 
 @index_bp.route('home/details/<string:client_id>', methods=['GET'])
 def home_details(client_id):
-
     client = Clients.get(client_id)
     completed = 0
     if client:
