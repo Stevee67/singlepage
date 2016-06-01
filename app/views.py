@@ -38,25 +38,26 @@ def home_details(client_id):
 @index_bp.route('save_request/', methods=['POST'])
 def save_request():
     req = FeatureRequest.save_request(request.form)
-    return req
+    return jsonify(req)
 
 @index_bp.route('delete_request/', methods=['POST'])
 def delete_request():
     data = request.form
+    print(FeatureRequest.immut_to_dict(data)['id'])
     FeatureRequest.get(FeatureRequest.immut_to_dict(data)['id']).delete()
-    return {}
+    return jsonify({})
 
 @index_bp.route('edit_request/', methods=['POST'])
 def edit_request():
     data = request.form
     feature_request = FeatureRequest.set_request(data)
-    return feature_request
+    return jsonify(feature_request)
 
 @index_bp.route('set_client_priority/', methods=['POST'])
 def set_client_priority():
     data = request.form
     feature_request = FeatureRequest.get(data.id).set_attr(data)
-    return feature_request
+    return jsonify(feature_request)
 
 @index_bp.route('add_client/', methods=['POST'])
 def add_client():

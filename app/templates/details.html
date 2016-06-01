@@ -94,7 +94,7 @@
                             <td >{{req['priority']}}</td>
                             <td >{{req['status']}}</td>
                             <td>
-                                <button data-bind="click: $root.edit" type="button" class="btn btn-warning" data-toggle="modal" data-target="#modalRequestForm" onclick="edit_request('{{req}}')"><i class="fa fa-edit"></i></button>
+                                <button data-bind="click: $root.edit" type="button" class="btn btn-warning" data-toggle="modal" data-target="#modalRequestForm" onclick="edit_request('{{req.id}}')"><i class="fa fa-edit"></i></button>
                                 <button data-bind="click: $root.remove" type="button" class="btn btn-danger" onclick="remove_request('{{req.id}}')"><i class="fa fa-remove"></i></button>
                             </td>
                          {%endfor%}
@@ -102,7 +102,7 @@
                     </tbody>
                 </table>
             </div>
-            <a href="home.html" class="btn btn-default">
+            <a href="/home/" class="btn btn-default">
                 <i class="fa fa-arrow-left"></i>&nbsp;Back to Clients
             </a>
             <button class="btn btn-primary" data-toggle="modal" data-target="#modalRequestForm" data-bind="click: add">
