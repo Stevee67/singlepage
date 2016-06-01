@@ -272,7 +272,7 @@ class Clients(Parent, Base):
 
 
             if r['count_request'] and r['count_active_request']:
-                r.update({'completed_persent': round(( r['count_request'] - r['count_active_request'])/100, 2)})
+                r.update({'completed_persent': round(( (r['count_active_request'])/r['count_request']) *100, 2)})
             else:
                 r.update({'completed_persent': 0})
             res.append(r)
