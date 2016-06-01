@@ -111,9 +111,27 @@ function remove_request(req_id){
 	})
 }
 
-function edit() {
-    console.log('dasdassadsa')
+function get_clients() {
+    $.ajax({
+		url: '/home/',
+		type: 'post',
+		success: function (data) {
+			console.log(data)
+		}
+	})
 }
+
+function get_request(client_id) {
+	url = "/home/details/"+ toString(client_id)
+    $.ajax({
+		url: url,
+		type: 'post',
+		success: function (data) {
+			console.log(data)
+		}
+	})
+}
+
 function edit_request(req_id){
     var data = {};
 	var required_fields = ['title', 'targetDate', 'productArea', 'priority', 'ticketURL', 'description'];

@@ -18,8 +18,18 @@ def home():
     clients = Clients.get_all()
     return render_template('home.html', clients=clients)
 
+@index_bp.route('home/', methods=['POST'])
+def get_clients():
+    clients = Clients.get_all()
+    return jsonify(clients=clients)
+
 @index_bp.route('home/details/<string:client_id>', methods=['GET'])
 def home_details(client_id):
+    client = Clients.get(client_id)
+    return render_template('details.html', client=client)
+
+@index_bp.route('home/details/<string:client_id>', methods=['POST'])
+def home_details_post(client_id):
     client = Clients.get(client_id)
     completed = 0
     if client:
@@ -29,12 +39,14 @@ def home_details(client_id):
     if current_user.is_authenticated:
         user = db(Users, id=current_user.id).first()
     product_areas = [area.object_to_dict() for area in db(ProductAreas).all()]
-    return render_template('details.html', client=client.object_to_dict(),
-                           feature_requests=feature_requests,
-                           product_areas=product_areas,
-                           prioritets=PRIORITETS,
-                           user=user.object_to_dict(),
-                           completed=completed)
+    return jsonify({
+        'client':client.object_to_dict(),
+        'feature_requests':feature_requests,
+        'product_areas' : product_areas,
+        'prioritets' : PRIORITETS,
+        'user' : user.object_to_dict(),
+        'completed' : completed
+    })
 
 
 @index_bp.route('save_request/', methods=['POST'])

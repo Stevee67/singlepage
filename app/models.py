@@ -140,10 +140,10 @@ class FeatureRequest(Parent, Base):
         res = []
         for r in objs:
             if FeatureRequest.if_active_request(r):
-                client = Clients.get(r['client_id']).increase_count_active_request()
+                Clients.get(r['client_id']).increase_count_active_request()
                 r.update({'status': 'TODO' if FeatureRequest.if_active_request(r) else 'DONE'})
             else:
-                client = Clients.get(r['client_id']).decrease_count_active_request()
+                Clients.get(r['client_id']).decrease_count_active_request()
 
             r.update({'area': ProductAreas.get(r['product_area_id']).title})
             res.append(r)
