@@ -131,6 +131,7 @@ function get_request(client_id) {
 		}
 	})
 }
+get_clients()
 
 function edit_request(req_id){
     var data = {};

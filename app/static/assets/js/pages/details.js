@@ -22,7 +22,7 @@ function DetailsPageViewModel() {
     self.requests.subscribe(function (x) {
         x.sort(function (l, r) { return l.priority() > r.priority(); });
     });
-    self.productAreas = ko.observableArray(['Policies', 'Billing', 'Claims', 'Reports']);
+    self.productAreas = ko.observableArray();
     self.priorityRates = ko.computed(function () {
         var rates = [];
         for (var i = 1; i <= (self.requests().length + 1); i++) {
@@ -31,9 +31,11 @@ function DetailsPageViewModel() {
         return rates;
     }); 
     self.requestForm = ko.observable(new RequestViewModel());
-    self.clientDetails = new ClientDetailsViewModel({ ClientId: 1, ClientName: 'Client', ProjectName: 'Proj', Description: 'decr', Priority: 1, RequestsCount: 25, ActiveRequestsCount: 15 });
-
+    self.clientDetails = ko.observable(new ClientDetailsViewModel());
+    self.clientId =window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1);
+    self.editAllowed = ko.observable(true);
     self.edit = function(item) {
+         console.log(item);
         self.mode = FormMode.EDIT;
         self.requestForm(item);
     }
@@ -41,8 +43,10 @@ function DetailsPageViewModel() {
         self.mode = FormMode.ADD;
         self.requestForm(new RequestViewModel());
     }
-    self.remove = function (item) {
-        self.requests.remove(item);
+    self.del = function (item) {
+        $.post('/delete_request/', { id: item.requestId }, function () {
+            self.requests.remove(item);
+        });
     }
     self.save = function () {
         var validation = ko.validatedObservable(self.requestForm());
@@ -55,18 +59,45 @@ function DetailsPageViewModel() {
         switch (self.mode) {
         case FormMode.ADD:
         {
-            self.requests.push(self.requestForm());
-            self.requestForm(new RequestViewModel());
-            //save to database
+            var data = {'title': self.requestForm().title(),
+                    'description': self.requestForm().description(),
+                    'client_id': self.clientId,
+                    'targetDate': self.requestForm().targetDate(),
+                    'ticketURL': self.requestForm().ticketURL(),
+                    'status': 'TODO' ,
+                    'priority': self.requestForm().priority(),
+                    'productArea': self.requestForm().area().id};
+
+            $.post('/save_request/', data, function (data) {
+                self.requests.push(new RequestViewModel(data));
+            });
         } break;
         case FormMode.EDIT:
             {
-                //save to database
+                 var data = {
+                     'requestId': self.requestForm().requestId,
+                     'title': self.requestForm().title(),
+                    'description': self.requestForm().description(),
+                    'client_id': self.clientId,
+                    'targetDate': self.requestForm().targetDate(),
+                    'ticketURL': self.requestForm().ticketURL(),
+                    'status': 'TODO' ,
+                    'priority': self.requestForm().priority(),
+                    'productArea': self.requestForm().area().id};
+                $.post('/set_request/', data, function(data) {
+                });
             } break;
         }
     }
     self.load = function() {
-        //load from db
+        $.get('/home/details_get/' + self.clientId , function(data) {
+            self.productAreas(data.product_areas);
+            ko.utils.arrayForEach(data.feature_requests, function(item){
+                self.requests.push(new RequestViewModel(item));
+            })
+            self.editAllowed(data.user_auth)
+            self.clientDetails(new ClientDetailsViewModel(data.clients));
+        });
     }
     self.resetPriority = function(priority) {
         if (self.requests().length < priority) {
@@ -78,28 +109,52 @@ function DetailsPageViewModel() {
     }
 }
 
-function ClientDetailsViewModel(model) {
+function ClientDetailsViewModel(data) {
     var self = this;
 
-    self.clientName = model.ClientName;
-    self.projectName = model.ProjectName;
-    self.description = model.Description;
-    self.priority = model.Priority;
-    self.compleatedPercent = ((model.ActiveRequestsCount / model.RequestsCount) * 100).toFixed(0);
-    self.phones = model.Phones;
-    self.email = model.Email;
-    self.website = model.Website;
+    self.clientName = '';
+    self.projectName = '';
+    self.description = '';
+    self.priority = '';
+    self.compleatedPercent = '';
+    self.phones = '';
+    self.email = '';
+    self.website = '';
+
+    if (data) {
+        self.clientName = data.client_name;
+        self.projectName = data.project_name;
+        self.description = data.description;
+        self.priority = data.priority;
+
+        self.compleatedPercent = data.completed_persent;//((data.count_active_request / data.count_request) * 100).toFixed(0);
+        self.phones = data.phone;
+        self.email = data.email;
+        self.website = data.website;
+    }
 }
 
 function RequestViewModel(data) {
     var self = this;
 
+    self.requestId = 0;
     self.title = ko.observable().extend({ required: true });
     self.description = ko.observable();
     self.priority = ko.observable();
     self.targetDate = ko.observable().extend({ required: true });
     self.ticketURL = ko.observable();
     self.area = ko.observable();
+    self.areaTitle = ko.observable();
     //TODO: add this
-    self.status = ko.observable('To Do');
+    self.status = 'To Do';
+
+    if(data){
+        self.requestId = data.id;
+        self.title(data.title);
+        self.description(data.description);
+        self.priority(data.priority);
+        self.targetDate(data.target_date);
+        self.ticketURL(data.ticket_url);
+        self.areaTitle(data.area);
+    }
 }

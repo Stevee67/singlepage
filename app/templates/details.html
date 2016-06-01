@@ -12,7 +12,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <!-- Favicon -->
-    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="shortcut icon" href="/static/favicon.ico">
     <!-- Web Fonts -->
     <link rel='stylesheet' type='text/css' href='//fonts.googleapis.com/css?family=Open+Sans:400,300,600&amp;subset=cyrillic,latin'>
     <!-- CSS Global Compulsory -->
@@ -42,11 +42,12 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">FEATURE REQUEST APP</a>
+                <a class="navbar-brand" href="/home/">FEATURE REQUEST APP</a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#">CLIENTS</a></li>
+                    <li><a href="/home/">CLIENTS</a></li>
+                    <li data-bind="visible: editAllowed"><a href="/logout/"><i class="fa fa-sign-out"></i> LOG OUT</a></li>
                 </ul>
             </div>
         </div>
@@ -83,32 +84,27 @@
                             <th style="width: 98px;">*</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {% for req in feature_requests %}
+                    <tbody data-bind="foreach: requests">
                         <tr>
-                            <td >{{req['title']}}</td>
-                            <td >{{req['description']}}</td>
-                            <td >{{req['target_date']}}</td>
-                            <td><a href="'{{req['ticket_url']}}'">{{req['ticket_url']}}</a></td>
-                            <td >{{req['area']}}</td>
-                            <td >{{req['priority']}}</td>
-                            <td >{{req['status']}}</td>
-                             {% if user %}
-                                <td>
-                                    <button data-bind="click: $root.edit" type="button" class="btn btn-warning" data-toggle="modal" data-target="#modalRequestForm" onclick="edit_request('{{req.id}}')"><i class="fa fa-edit"></i></button>
-                                    <button data-bind="click: $root.remove" type="button" class="btn btn-danger" onclick="remove_request('{{req.id}}')"><i class="fa fa-remove"></i></button>
-
-                                </td>
-                            {% endif %}
-                         {%endfor%}
+                            <td data-bind="text: title"></td>
+                            <td data-bind="text: description"></td>
+                            <td data-bind="text: targetDate"></td>
+                            <td><a data-bind="text: ticketURL, attr: { href: ticketURL}"></a></td>
+                            <td data-bind="text: areaTitle"></td>
+                            <td data-bind="text: priority"></td>
+                            <td data-bind="text: status"></td>
+                            <td>
+                                <button data-bind="click: $root.edit, visible: $root.editAllowed" type="button" class="btn btn-warning" data-toggle="modal" data-target="#modalRequestForm"><i class="fa fa-edit"></i></button>
+                                <button data-bind="click: $root.del, visible: $root.editAllowed" type="button" class="btn btn-danger"><i class="fa fa-remove"></i></button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <a href="/home/" class="btn btn-default">
-                <i class="fa fa-arrow-left"></i>&nbsp;Back to Clients
+            <a href="/home" class="btn btn-default">
+                <i class="fa fa-arrow-left"></i>&nbsp;Back to Clients List
             </a>
-            <button class="btn btn-primary" data-toggle="modal" data-target="#modalRequestForm" data-bind="click: add">
+            <button class="btn btn-primary" data-toggle="modal" data-target="#modalRequestForm" data-bind="click: add, visible: editAllowed">
                 <i class="fa fa-plus"></i>&nbsp;Add New Request
             </button>
         </div>
@@ -116,7 +112,7 @@
         <footer>
             <p>&copy; 2016 Diceus</p>
         </footer>
-</div> 
+    </div>
 
     <!-- Modal -->
     <div class="modal fade" id="modalRequestForm" tabindex="-1" role="dialog" aria-labelledby="modalAddRequest">
@@ -131,7 +127,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button data-bind="click: save" type="button" class="btn btn-primary" onclick="save_request('{{client.id}}')">Save</button>
+                    <button data-bind="click: save" type="button" class="btn btn-primary">Save</button>
                 </div>
             </div>
         </div>
@@ -147,49 +143,40 @@
     <script type="text/javascript" src="/static/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
     <script type="text/javascript" src="/static/assets/js/circles-master.js"></script>
     <script type="text/javascript" src="/static/assets/js/pages/details.js"></script>
-    <script type="text/javascript" src="/static/assets/js/custom.js"></script>
 
     <!-- Request Form -->
     <script type="text/html" id="request-form-template">
         <div class="form-group">
             <label>Title</label>
-            <input type="text" class="form-control" placeholder="Title" id="title" value="">
+            <input data-bind="value: title" type="text" class="form-control" placeholder="Title">
         </div>
         <div class="form-group">
             <label for="description">Description</label>
-            <textarea class="form-control" id="description" placeholder="Description" rows="4"></textarea>
+            <textarea data-bind="value: description" class="form-control" id="description" placeholder="Description" rows="4"></textarea>
         </div>
         <div class="row">
             <div class="col-lg-5">
                 <div class="form-group">
                     <label for="targetDate">Target Date</label>
-                    <input type="text" class="form-control datepiker" id="targetDate" placeholder="Target Date">
+                    <input data-bind="value: targetDate" type="text" class="form-control datepiker" id="targetDate" placeholder="Target Date">
                 </div>
             </div>
             <div class="col-lg-5">
                 <div class="form-group">
                     <label for="productArea">Product Area</label>
-                    <select id="productArea" class="form-control">
-                        {% for item in product_areas %}
-                            <option  value="{{item['title']}}">{{item['title']}}</option>
-                        {% endfor %}
-                    </select>
+                    <select data-bind="options: $root.productAreas, value: area, optionsText: 'title'," id="productArea" class="form-control"></select>
                 </div>
             </div>
             <div class="col-lg-2">
                 <div class="form-group">
                     <label for="priority">Priority</label>
-                    <select id="priority" class="form-control">
-                        {% for item in prioritets %}
-                            <option  value="{{item}}">{{item}}</option>
-                        {% endfor %}
-                    </select>
+                    <select data-bind="options: $root.priorityRates, value: priority" id="priority" class="form-control"></select>
                 </div>
             </div>
         </div>
         <div class="form-group">
             <label for="ticketURL">Tiket URL</label>
-            <input  type="text" class="form-control" id="ticketURL" placeholder="Tiket URL">
+            <input data-bind="value: ticketURL" type="text" class="form-control" id="ticketURL" placeholder="Tiket URL">
         </div>
     </script>
     <!-- Client Details -->
@@ -198,19 +185,19 @@
         <table class="table table-bordered table-striped">
             <tr>
                 <td><label>Project Name</label></td>
-                <td><strong>{{client['project_name']}}</strong></td>
+                <td><strong data-bind="text: projectName"></strong></td>
                 <td><label>Phones</label></td>
-                <td><strong>{{client['phone']}}</strong></td>
+                <td><strong data-bind="text: phones"></strong></td>
             </tr>
             <tr>
                 <td><label>Client Priority</label></td>
-                <td><strong>{{client['priority']}}</strong></td>
+                <td><strong data-bind="text: priority"></strong></td>
                 <td><label>Website</label></td>
-                <td><strong>{{client['website']}}</strong></td>
+                <td><strong data-bind="text: website"></strong></td>
             </tr>
             <tr>
                 <td><label>Email</label></td>
-                <td><strong>{{client['email']}}</strong></td>
+                <td><strong data-bind="text: email">test@test.com</strong></td>
             </tr>
         </table>
     </script>

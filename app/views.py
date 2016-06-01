@@ -16,19 +16,22 @@ def index():
 @index_bp.route('home/', methods=['GET'])
 def home():
     clients = Clients.get_all()
-    return render_template('home.html', clients=clients)
+    return render_template('new/home.html', clients=clients)
 
 @index_bp.route('home/', methods=['POST'])
 def get_clients():
+    user = None
+    if current_user.is_authenticated():
+        user = db(Users, id=current_user.id).first()
     clients = Clients.get_all()
-    return jsonify(clients=clients)
+    return jsonify(clients=clients, user_auth=True if user else False,)
 
 @index_bp.route('home/details/<string:client_id>', methods=['GET'])
 def home_details(client_id):
     client = Clients.get(client_id)
     return render_template('details.html', client=client)
 
-@index_bp.route('home/details/<string:client_id>', methods=['POST'])
+@index_bp.route('home/details_get/<string:client_id>', methods=['GET','POST'])
 def home_details_post(client_id):
     client = Clients.get(client_id)
     completed = 0
@@ -36,26 +39,30 @@ def home_details_post(client_id):
         completed = client.get_persent_compl()
     feature_requests = FeatureRequest.get_all(client_id)
     user = None
-    if current_user.is_authenticated:
+    if current_user.is_authenticated():
         user = db(Users, id=current_user.id).first()
     product_areas = [area.object_to_dict() for area in db(ProductAreas).all()]
     return jsonify({
-        'client':client.object_to_dict(),
+        'clients':client.object_to_dict(),
         'feature_requests':feature_requests,
         'product_areas' : product_areas,
         'prioritets' : PRIORITETS,
-        'user' : user.object_to_dict(),
+        'user_auth' : True if user else False,
         'completed' : completed
     })
 
 
 @index_bp.route('save_request/', methods=['POST'])
 def save_request():
+    if not current_user.is_authenticated():
+        return 'ERROR'
     req = FeatureRequest.save_request(request.form)
     return jsonify(req)
 
 @index_bp.route('delete_request/', methods=['POST'])
 def delete_request():
+    if not current_user.is_authenticated():
+        return 'ERROR'
     data = request.form
     feuture =  FeatureRequest.get(FeatureRequest.immut_to_dict(data)['id'])
     if feuture:
@@ -63,8 +70,10 @@ def delete_request():
         return 'OK'
     return 'ERROR'
 
-@index_bp.route('edit_request/', methods=['POST'])
-def edit_request():
+@index_bp.route('set_request/', methods=['POST'])
+def set_request():
+    if not current_user.is_authenticated():
+        return 'ERROR'
     data = request.form
     feature_request = FeatureRequest.set_request(data)
     return jsonify(feature_request)
@@ -97,8 +106,8 @@ def login():
         return render_template(url_for('index.index'))
     email = request.form.get('email')
     password = request.form.get('password')
-    if current_user.is_authenticated:
-        redirect('/')
+    if current_user.is_authenticated():
+        return redirect('/')
     if email and password:
         user = db(Users).filter(Users.email == email).first()
         if user and user.verify_password(password):
@@ -108,7 +117,7 @@ def login():
             return "Incorect data"
     return 'Fill all fields'
 
-@index_bp.route("/logout")
+@index_bp.route("logout/")
 @login_required
 def logout():
     logout_user()

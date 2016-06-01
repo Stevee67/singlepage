@@ -36,7 +36,8 @@ function ClientViewModel(model) {
     self.projectName = model.project_name;
     self.description = model.description;
     self.priority = model.priority;
-    self.requestsCount = model.count_request;
+    self.requestsCount =
     self.activeRequestsCount = model.count_active_request;
-    self.compleatedPercent = ((model.count_active_request / model.count_request) * 100).toFixed(0);
+    self.compleatedActive = model.count_active_request + '/' + model.count_request;
+    self.compleatedPercent = model.completed_persent//((model.count_active_request / model.count_request) * 100).toFixed(0);
 }

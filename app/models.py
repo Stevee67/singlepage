@@ -76,9 +76,9 @@ class FeatureRequest(Parent, Base):
     @staticmethod
     def get_corect_data(data):
         request = FeatureRequest.immut_to_dict(data)
-        productArea_id = ''
+        productArea_id = 0
         if 'productArea' in request:
-            productArea = db(ProductAreas).filter(ProductAreas.title == request['productArea']).first()
+            productArea = db(ProductAreas).filter(ProductAreas.id == request['productArea']).first()
             if productArea:
                 productArea_id = productArea.id
         ts = time.time()
@@ -124,9 +124,9 @@ class FeatureRequest(Parent, Base):
 
     @staticmethod
     def set_request(data):
-        id = FeatureRequest.immut_to_dict(data)['id']
+        id = FeatureRequest.immut_to_dict(data)['requestId']
         new_data = FeatureRequest.get_corect_data(data)
-        object = FeatureRequest.get(id).first()
+        object = FeatureRequest.get(id)
         if object:
             object.set_attr(new_data).save()
             return object.object_to_dict()
@@ -193,14 +193,12 @@ class Users(Parent, Base):
         return self.password_hash and \
                check_password_hash(self.password_hash, password)
 
-    @property
     def is_authenticated(self):
         return True
 
     def is_active(self):
         return True
 
-    @property
     def is_anonymous(self):
         return False
 
@@ -274,7 +272,7 @@ class Clients(Parent, Base):
 
 
             if r['count_request'] and r['count_active_request']:
-                r.update({'completed_persent': round((r['count_request'] /r['count_active_request'])*100, 2)})
+                r.update({'completed_persent': round(( r['count_request'] - r['count_active_request'])/100, 2)})
             else:
                 r.update({'completed_persent': 0})
             res.append(r)

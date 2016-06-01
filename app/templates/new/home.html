@@ -12,7 +12,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <!-- Favicon -->
-    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="shortcut icon" href="/static/favicon.ico">
     <!-- Web Fonts -->
     <link rel='stylesheet' type='text/css' href='//fonts.googleapis.com/css?family=Open+Sans:400,300,600&amp;subset=cyrillic,latin'>
     <!-- CSS Global Compulsory -->
@@ -32,7 +32,6 @@
 </head>
 
 <body>
-
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -42,30 +41,28 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="/home/">FEATURE REQUEST APP</a>
+                <a class="navbar-brand" href="#">FEATURE REQUEST APP</a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="/home/">CLIENTS</a></li>
-                     <li data-bind="visible: editAllowed"><a href="/logout/"><i class="fa fa-sign-out"></i> LOG OUT</a></li>
-
+                    <li><a href="#">CLIENTS</a></li>
+                    <li data-bind="visible: editAllowed"><a href="/logout/"><i class="fa fa-sign-out"></i> LOG OUT</a></li>
                 </ul>
             </div><!--/.navbar-collapse -->
         </div>
     </nav>
     <div class="container">
         <div class="row margin-top-20">
-            {%for client in clients %}
-            <div class="col-lg-8">
+            <div class="col-lg-8" data-bind="foreach: clients">
                 <div class="panel panel-sea">
                     <div class="panel-heading">
-                        <h3 class="panel-title"><i class="fa fa-building"></i><span >{{client['client_name']}}</span><span class="pull-right">Request:<span>{{client['count_request'] if client['count_request'] else 0}}/{{client['count_active_request'] if client['count_active_request'] else 0}}</span></span></h3>
+                        <h3 class="panel-title"><i class="fa fa-building"></i><span data-bind="text: clientName"></span><span class="pull-right">Request:<span data-bind="text: compleatedActive"></span></span></h3>
                     </div>
                     <div class="panel-body">
                         <div class="row">
                             <div class="col-lg-8">
-                                <h4>{{client['project_name']}}</h4>
-                                <p>{{client['description']}}</p>
+                                <h4 data-bind="text: projectName"></h4>
+                                <p data-bind="text: description"></p>
                             </div>
                             <div class="col-lg-4 text-center">
                                 <div class="circle" id="circles-3">
@@ -73,7 +70,7 @@
                                         <svg width="140" height="140"><path fill="transparent" stroke="#BEE3F7" stroke-width="2" d="M 69.98594654894504 1.0000014311557095 A 69 69 0 1 1 69.90416038427306 1.0000665596838587 Z"></path><path fill="transparent" stroke="#3498DB" stroke-width="2" d="M 69.98594654894504 1.0000014311557095 A 69 69 0 1 1 2.2364051601485784 83.0036615758971 "></path></svg>
                                         <div class="circles-text-wrp" style="position: absolute; top: 0; left: 0; text-align: center; width: 100%; font-size: 35px; height: 140px; line-height: 140px;">
                                             <span class="circles-number">
-                                                <span class="circles-number">{{client['completed_persent']}}</span>
+                                                <span class="circles-number" data-bind="text: compleatedPercent"></span>
                                             </span><span class="circles-text">%</span>
                                         </div>
                                     </div>
@@ -81,13 +78,12 @@
                             </div>
                         </div>
                         <div class="margin-top-20">
-                            <strong>Priority: {{client['priority']}}</strong>
-                            <a href="/home/details/{{client['id']}}" class="btn btn-default pull-right">View Details</a>
+                            <strong>Priority: <span data-bind="text: priority"></span></strong>
+                            <a data-bind="attr:{href: '/home/details/' + clientId }" class="btn btn-default pull-right">View Details</a>
                         </div>
                     </div>
                 </div>
             </div>
-            {% endfor %}
             <div class="col-lg-4 text-center">
                 <div class="inner-pchart">
                     <div class="circle" id="circle-1">
@@ -116,7 +112,6 @@
     <script type="text/javascript" src="/static/assets/plugins/jquery/jquery-migrate.min.js"></script>
     <script type="text/javascript" src="/static/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/static/assets/plugins/knockoutjs/knockout-3.4.0.js"></script>
-    <script type="text/javascript" src="/static/assets/js/pages/home.js"></script>
-    <script type="text/javascript" src="/static/assets/js/custom.js"></script>
+    <script type="text/javascript" src="/static/assets/js/pages/new/home.js"></script>
 </body>
 </html>
