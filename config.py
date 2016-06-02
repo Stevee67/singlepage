@@ -12,7 +12,7 @@ class Config:
         DB_USER = os.environ.get('OPENSHIFT_POSTGRESQL_DB_USERNAME')
         DB_HOST = os.environ.get('OPENSHIFT_POSTGRESQL_DB_HOST')
         DB_PASS = os.environ.get('OPENSHIFT_POSTGRESQL_DB_PASSWORD')
-        DB_PORT = int(os.environ.get('OPENSHIFT_POSTGRESQL_DB_PORT'))
+        DB_PORT = os.environ.get('OPENSHIFT_POSTGRESQL_DB_PORT')
     SITE_TITLE = ''
     DATABASE_URI = \
         database_uri(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT)
