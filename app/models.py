@@ -134,7 +134,6 @@ class FeatureRequest(Parent, Base):
     def set_request(data):
         id = FeatureRequest.immut_to_dict(data)['requestId']
         new_data = FeatureRequest.get_corect_data(data)
-        print(new_data)
         object = FeatureRequest.get(id)
         client_features = db(FeatureRequest).filter(FeatureRequest.client_id == new_data['client_id']).order_by(FeatureRequest.priority)
         FeatureRequest.set_features(client_features, new_data, id)
