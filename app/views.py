@@ -102,8 +102,6 @@ def get_product_areas():
 
 @index_bp.route('login/', methods=['GET','POST'])
 def login():
-    if request.method == 'GET':
-        return render_template(url_for('index.index'))
     email = request.form.get('email')
     password = request.form.get('password')
     if current_user.is_authenticated():

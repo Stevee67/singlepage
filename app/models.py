@@ -270,8 +270,6 @@ class Clients(Parent, Base):
                 if FeatureRequest.if_active_request(request):
                     active_request += 1
             client.count_active_request = active_request
-
-
             if r['count_request'] and r['count_active_request']:
                 if r['count_active_request']/r['count_request'] == 1:
                     r.update({'completed_persent':0})
