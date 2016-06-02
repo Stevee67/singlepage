@@ -1,11 +1,10 @@
 ﻿$(function () {
-    CirclesMaster.initCirclesMaster1();
     var pageViewModel = new DetailsPageViewModel();
     ko.applyBindings(pageViewModel);
     pageViewModel.load();
 
     $('#modalRequestForm').on('shown.bs.modal', function (e) {
-        $('#targetDate').datepicker({});
+        $('#targetDate').datepicker({autoclose: true});
     });
 });
 
@@ -23,13 +22,7 @@ function DetailsPageViewModel() {
         x.sort(function (l, r) { return l.priority() > r.priority(); });
     });
     self.productAreas = ko.observableArray();
-    self.priorityRates = ko.computed(function () {
-        var rates = [];
-        for (var i = 1; i <= (self.requests().length + 1); i++) {
-            rates.push(i);
-        }
-        return rates;
-    }); 
+    self.priorityRates = ko.observableArray();
     self.requestForm = ko.observable(new RequestViewModel());
     self.clientDetails = ko.observable(new ClientDetailsViewModel());
     self.clientId =window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1);
@@ -69,7 +62,7 @@ function DetailsPageViewModel() {
                     'productArea': self.requestForm().area().id};
 
             $.post('/save_request/', data, function (data) {
-                self.requests.push(new RequestViewModel(data));
+                self.load();
             });
         } break;
         case FormMode.EDIT:
@@ -85,20 +78,26 @@ function DetailsPageViewModel() {
                     'priority': self.requestForm().priority(),
                     'productArea': self.requestForm().area().id};
                 $.post('/set_request/', data, function(data) {
+                    self.load();
                 });
             } break;
         }
     }
     self.load = function() {
+        self.productAreas([]);
+        self.requests([]);
         $.get('/home/details_get/' + self.clientId , function(data) {
             self.productAreas(data.product_areas);
             ko.utils.arrayForEach(data.feature_requests, function(item){
                 self.requests.push(new RequestViewModel(item));
-            })
-            self.editAllowed(data.user_auth)
+            });
+            self.editAllowed(data.user_auth);
             self.clientDetails(new ClientDetailsViewModel(data.clients));
+            self.priorityRates(data.prioritets);
+            CirclesMaster.initCirclesMaster(data.completed);
         });
     }
+
     self.resetPriority = function(priority) {
         if (self.requests().length < priority) {
             return;

@@ -1,4 +1,7 @@
 from flask import request, g, url_for
+import time
+import datetime
+
 
 def database_uri(host, username, password, db_name, port):
     return 'postgresql+psycopg2://{username}:{password}@{host}:{port}/{db_name}'. \
@@ -25,3 +28,15 @@ def redirect_url(*args):
     for elem in res_urls:
         res_url = res_url or elem
     return res_url
+
+
+def datetime_from_utc_to_local(utc_datetime):
+    now_timestamp = time.time()
+    offset = datetime.datetime.fromtimestamp(now_timestamp) - datetime.datetime.utcfromtimestamp(now_timestamp)
+    return utc_datetime + offset
+
+
+def format_date(date):
+    month = date.month if len(str(date.month)) > 1 else '0' + str(date.month)
+    formating_date = '{0}/{1}/{2}'.format(month, date.day, date.year)
+    return formating_date

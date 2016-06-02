@@ -23,8 +23,8 @@ def get_clients():
     user = None
     if current_user.is_authenticated:
         user = db(Users, id=current_user.id).first()
-    clients = Clients.get_all()
-    return jsonify(clients=clients, user_auth=True if user else False,)
+    clients, full_completed = Clients.get_all()
+    return jsonify(clients=clients, user_auth=True if user else False,full_completed=full_completed)
 
 @index_bp.route('home/details/<string:client_id>', methods=['GET'])
 def home_details(client_id):
@@ -36,7 +36,7 @@ def home_details_post(client_id):
     client = Clients.get(client_id)
     completed = 0
     if client:
-        completed = client.get_persent_compl()
+        completed = client.get_persent_compl(client.object_to_dict())
     feature_requests = FeatureRequest.get_all(client_id)
     user = None
     if current_user.is_authenticated:
@@ -46,7 +46,7 @@ def home_details_post(client_id):
         'clients':client.object_to_dict(),
         'feature_requests':feature_requests,
         'product_areas' : product_areas,
-        'prioritets' : PRIORITETS,
+        'prioritets' : FeatureRequest.get_list_prioritets(len(feature_requests)),
         'user_auth' : True if user else False,
         'completed' : completed
     })

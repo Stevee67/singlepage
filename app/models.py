@@ -2,7 +2,7 @@ from sqlalchemy import Column, ForeignKey
 from app.constants import TABLE_TYPES
 from sqlalchemy.ext.declarative import declarative_base
 from flask import g
-from app.tools import db
+from app.tools import db, format_date
 from werkzeug.security import generate_password_hash, check_password_hash
 import time
 import datetime
@@ -73,14 +73,19 @@ class FeatureRequest(Parent, Base):
         self.priority = priority
         self.product_area_id = product_area_id
 
+
+    @staticmethod
+    def get_list_prioritets(len):
+        return [n for n in range(len+2) if n != 0]
+
     @staticmethod
     def get_corect_data(data):
         request = FeatureRequest.immut_to_dict(data)
-        productArea_id = 0
+        product_area_id = 0
         if 'productArea' in request:
-            productArea = db(ProductAreas).filter(ProductAreas.id == request['productArea']).first()
-            if productArea:
-                productArea_id = productArea.id
+            product_area = db(ProductAreas).filter(ProductAreas.id == request['productArea']).first()
+            if product_area:
+                product_area_id = product_area.id
         ts = time.time()
         st = datetime.datetime.fromtimestamp(ts)
         new_data = {'title': request['title'] if 'title' in request else '',
@@ -90,7 +95,7 @@ class FeatureRequest(Parent, Base):
                     'ticket_url': request['ticketURL'] if 'ticketURL' in request else '',
                     'status': 'TODO' ,
                     'priority': int(request['priority']) if 'priority' in request else '',
-                    'product_area_id': productArea_id}
+                    'product_area_id': product_area_id}
         return new_data
 
     @staticmethod
@@ -110,11 +115,14 @@ class FeatureRequest(Parent, Base):
     @staticmethod
     def save_request(data):
         new_data = FeatureRequest.get_corect_data(data)
+        client_features = db(FeatureRequest).filter(FeatureRequest.client_id == new_data['client_id']).\
+            order_by(FeatureRequest.priority)
+        FeatureRequest.set_features(client_features, new_data, None)
         if 'client_id' in new_data:
             client = Clients.get(new_data['client_id'])
             if client.count_request:
-                client.count_request = client.count_request + 1
-                client.count_active_request = client.count_active_request + 1
+                client.count_request = (client.count_request + 1)
+                client.count_active_request = (client.count_active_request + 1)
             else:
                 client.count_request = 1
                 client.count_active_request = 1
@@ -126,12 +134,26 @@ class FeatureRequest(Parent, Base):
     def set_request(data):
         id = FeatureRequest.immut_to_dict(data)['requestId']
         new_data = FeatureRequest.get_corect_data(data)
+        print(new_data)
         object = FeatureRequest.get(id)
+        client_features = db(FeatureRequest).filter(FeatureRequest.client_id == new_data['client_id']).order_by(FeatureRequest.priority)
+        FeatureRequest.set_features(client_features, new_data, id)
         if object:
             object.set_attr(new_data).save()
             return object.object_to_dict()
         else:
             return 'ERROR'
+
+    @staticmethod
+    def set_features(client_features, new_data, id):
+        next_feature_priority = 0
+        for feature in client_features:
+            if (feature.priority == new_data['priority'] and feature.id != id) \
+                    or next_feature_priority == feature.priority:
+                if not feature.priority > next_feature_priority + 1:
+                    feature.priority = (feature.priority + 1)
+                next_feature_priority = feature.priority
+                feature.save()
 
 
     @staticmethod
@@ -140,12 +162,10 @@ class FeatureRequest(Parent, Base):
         res = []
         for r in objs:
             if FeatureRequest.if_active_request(r):
-                Clients.get(r['client_id']).increase_count_active_request()
                 r.update({'status': 'TODO' if FeatureRequest.if_active_request(r) else 'DONE'})
             else:
                 r.update({'status': 'DONE' if FeatureRequest.if_active_request(r) else 'DONE'})
-                Clients.get(r['client_id']).decrease_count_active_request()
-
+            r['target_date'] = format_date(r['target_date'])
             r.update({'area': ProductAreas.get(r['product_area_id']).title})
             res.append(r)
         return res
@@ -183,12 +203,12 @@ class Users(Parent, Base):
             self.password_hash = \
                 generate_password_hash(password,
                                        method='pbkdf2:sha256',
-                                       salt_length=32)  # salt_length=8
+                                       salt_length=32)
     @staticmethod
     def passs(password):
         return generate_password_hash(password,
                                        method='pbkdf2:sha256',
-                                       salt_length=32)  # salt_length=8
+                                       salt_length=32)
 
     def verify_password(self, password):
         return self.password_hash and \
@@ -235,21 +255,26 @@ class Clients(Parent, Base):
         self.count_request = count_request
         self.count_active_request = count_active_request
 
+
+    @staticmethod
     def get_persent_compl(self):
-        if self.count_request and self.count_active_request:
-            return self.count_request/self.count_active_request
-        else:
-            return 0
+        completed_persent = 0
+        if self['count_request'] and self['count_active_request']:
+            if self['count_active_request'] / self['count_request'] != 1:
+                completed_persent = round(((self['count_request'] - self['count_active_request']) / self['count_request']) * 100, 0)
+        elif self['count_request'] and not self['count_active_request']:
+            completed_persent = 100
+        return completed_persent
 
     def increase_count_active_request(self):
         if self.count_active_request:
-            self.count_active_request = self.count_active_request + 1
+            self.count_active_request = (self.count_active_request + 1)
             self.save()
 
     def decrease_count_active_request(self):
 
         if self.count_active_request and self.count_active_request!=0:
-            self.count_active_request = self.count_active_request - 1
+            self.count_active_request = (self.count_active_request - 1)
             self.save()
 
     def add_client(self, data):
@@ -258,27 +283,27 @@ class Clients(Parent, Base):
     @staticmethod
     def get_all():
         clients = [client.object_to_dict() for client in db(Clients).order_by(Clients.priority).all()]
-        res = []
-        for r in clients:
-            client = Clients.get(r['id'])
-            active_request = 0
-            client_request = db(FeatureRequest).filter(FeatureRequest.client_id==r['id']).all()
-            if not client_request:
-                client.count_request = 0
-            for request in client_request:
-                client.count_request = len(client_request)
-                if FeatureRequest.if_active_request(request):
-                    active_request += 1
-            client.count_active_request = active_request
-            if r['count_request'] and r['count_active_request']:
-                if r['count_active_request']/r['count_request'] == 1:
-                    r.update({'completed_persent':0})
-                else:
-                    r.update({'completed_persent': round(( (r['count_request']-r['count_active_request'])/r['count_request']) *100, 2)})
-            else:
-                r.update({'completed_persent': 0})
-            res.append(r)
-        return res
+        if clients:
+            res = []
+            full_completed = 0
+            for r in clients:
+                client = Clients.get(r['id'])
+                active_request = 0
+                client_request = db(FeatureRequest).filter(FeatureRequest.client_id==r['id']).all()
+                if not client_request:
+                    client.count_request = 0
+                for request in client_request:
+                    client.count_request = len(client_request)
+                    if FeatureRequest.if_active_request(request):
+                        active_request += 1
+                client.count_active_request = active_request
+                completed = Clients.get_persent_compl(client.object_to_dict())
+                full_completed += completed
+                r.update({'completed_persent': completed})
+                res.append(r)
+            return res, round(full_completed/len(clients), 0)
+        else:
+            return {}
 
 class ProductAreas(Parent, Base):
     __tablename__ = 'product_areas'

@@ -9,20 +9,13 @@ function HomePageViewModel() {
 
     self.clients = ko.observableArray();
     self.editAllowed = ko.observable(true);
-    self.compleatedPercent = ko.computed(function () {
-        var totalRequests = 0;
-        var totalActive = 0;
-        ko.utils.arrayForEach(self.clients(), function (client) {
-            totalRequests += client.requestsCount;
-            totalActive += client.activeRequestsCount;
-        });
-        return ((totalActive / totalRequests) * 100).toFixed(0);
-    });
+    self.compleatedPercent = ko.observable();
     self.load = function () {
         $.post('/home/', function (data) {
             console.log(data)
             self.clients(ko.utils.arrayMap(data.clients, function(item) { return new ClientViewModel(item); }));
              self.editAllowed(data.user_auth);
+             self.compleatedPercent(data.full_completed);
         })
     }
 }
