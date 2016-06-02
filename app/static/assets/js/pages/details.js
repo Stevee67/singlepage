@@ -103,7 +103,7 @@ function DetailsPageViewModel() {
             return;
         }
         for (var i = priority; i <= self.requests().length ; i++) {
-            self.requests()[i-1].priority(i + 1);
+            self.requests()[i-1].priority(i);
         }
     }
 }
@@ -145,7 +145,7 @@ function RequestViewModel(data) {
     self.area = ko.observable();
     self.areaTitle = ko.observable();
     //TODO: add this
-    self.status = 'To Do';
+    self.status = ko.observable();
 
     if(data){
         self.requestId = data.id;
@@ -155,5 +155,6 @@ function RequestViewModel(data) {
         self.targetDate(data.target_date);
         self.ticketURL(data.ticket_url);
         self.areaTitle(data.area);
+        self.status(data.status);
     }
 }
