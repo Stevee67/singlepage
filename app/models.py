@@ -143,6 +143,7 @@ class FeatureRequest(Parent, Base):
                 Clients.get(r['client_id']).increase_count_active_request()
                 r.update({'status': 'TODO' if FeatureRequest.if_active_request(r) else 'DONE'})
             else:
+                r.update({'status': 'DONE' if FeatureRequest.if_active_request(r) else 'DONE'})
                 Clients.get(r['client_id']).decrease_count_active_request()
 
             r.update({'area': ProductAreas.get(r['product_area_id']).title})
