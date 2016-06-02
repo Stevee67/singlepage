@@ -102,9 +102,10 @@ function DetailsPageViewModel() {
         if (self.requests().length < priority) {
             return;
         }
-        for (var i = priority; i <= self.requests().length ; i++) {
-            self.requests()[i-1].priority(i);
-        }
+        console.log(priority)
+        // for (var i = priority; i <= self.requests().length ; i++) {
+        //     self.requests()[i-1].priority(i);
+        // }
     }
 }
 

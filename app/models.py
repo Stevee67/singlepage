@@ -148,11 +148,15 @@ class FeatureRequest(Parent, Base):
     def set_features(client_features, new_data, id):
         next_feature_priority = 0
         for feature in client_features:
+            if next_feature_priority == feature.priority:
+                feature.priority = (feature.priority + 1)
+                next_feature_priority = feature.priority
             if feature.priority == new_data['priority'] and feature.id != id:
                 feature.priority = (feature.priority + 1)
+                next_feature_priority = feature.priority
             if next_feature_priority == feature.priority +1:
                 feature.priority = (feature.priority + 1)
-            next_feature_priority = feature.priority
+                next_feature_priority = feature.priority
             feature.save()
             # if not feature.priority > next_feature_priority + 1:
 
