@@ -17,7 +17,7 @@ class Config:
     DATABASE_URI = \
         database_uri(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT)
 
-    PORT = int(os.environ.get('OPENSHIFT_PYTHON_PORT')) if os.environ.get('OPENSHIFT_PYTHON_PORT') else 8888
+    PORT = os.environ.get('OPENSHIFT_PYTHON_PORT') or 8888
     HOST = os.environ.get('OPENSHIFT_PYTHON_IP') or '0.0.0.0'
     DEBUG = True
     SECRET_KEY = secret_data.SECRET_KEY
