@@ -21,7 +21,7 @@ def home():
 @index_bp.route('home/', methods=['POST'])
 def get_clients():
     user = None
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         user = db(Users, id=current_user.id).first()
     clients = Clients.get_all()
     return jsonify(clients=clients, user_auth=True if user else False,)
@@ -39,7 +39,7 @@ def home_details_post(client_id):
         completed = client.get_persent_compl()
     feature_requests = FeatureRequest.get_all(client_id)
     user = None
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         user = db(Users, id=current_user.id).first()
     product_areas = [area.object_to_dict() for area in db(ProductAreas).all()]
     return jsonify({
@@ -54,14 +54,14 @@ def home_details_post(client_id):
 
 @index_bp.route('save_request/', methods=['POST'])
 def save_request():
-    if not current_user.is_authenticated():
+    if not current_user.is_authenticated:
         return 'ERROR'
     req = FeatureRequest.save_request(request.form)
     return jsonify(req)
 
 @index_bp.route('delete_request/', methods=['POST'])
 def delete_request():
-    if not current_user.is_authenticated():
+    if not current_user.is_authenticated:
         return 'ERROR'
     data = request.form
     feuture =  FeatureRequest.get(FeatureRequest.immut_to_dict(data)['id'])
@@ -72,7 +72,7 @@ def delete_request():
 
 @index_bp.route('set_request/', methods=['POST'])
 def set_request():
-    if not current_user.is_authenticated():
+    if not current_user.is_authenticated:
         return 'ERROR'
     data = request.form
     feature_request = FeatureRequest.set_request(data)
@@ -104,7 +104,7 @@ def get_product_areas():
 def login():
     email = request.form.get('email')
     password = request.form.get('password')
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         return redirect('/')
     if email and password:
         user = db(Users).filter(Users.email == email).first()
